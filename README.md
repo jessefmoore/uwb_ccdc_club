@@ -1,5 +1,6 @@
 # UWB CCDC Club
-# dfir-jesseee on discord
+
+#### Contact dfir-jesseee on discord
 
 
 ## Resources
