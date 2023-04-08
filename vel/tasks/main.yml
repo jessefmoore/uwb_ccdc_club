@@ -1,0 +1,31 @@
+---
+# tasks file for test
+- name: Pull an image
+  community.docker.docker_image:
+    name: wlambert/velociraptor
+    source: pull
+    # Select platform for pulling. If not specified, will pull whatever docker prefers.
+#    pull:
+#      platform: amd64
+
+- name: Linux - vel systemd script
+  copy:
+    src: vel.service
+    dest: /etc/systemd/system/vel.service
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+
+- name: Linux - Enable Velociraptor
+  ansible.builtin.systemd:
+    daemon_reload: yes
+  become: yes
+#  tags: restart_winreact11
+- name: Linux - Start/Restart Veliciraptor
+  ansible.builtin.systemd:
+    name: vel
+    #state: stopped
+    state: started
+  become: yes
+#  tags: restart_winreact11

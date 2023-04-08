@@ -1,0 +1,28 @@
+---
+- name: Run cowsay on Ubuntu
+  hosts: ubuntu
+  become: true
+  tasks:
+#    - name: Clone the ponysay repository
+#      git:
+#        repo: https://github.com/erkin/ponysay.git
+#        dest: /opt/ponysay
+#        version: master
+    - name: Install cowsay
+      apt:
+        name: cowsay
+        state: present
+#      shell: |
+#        sudo snap install ponysay
+#        ahhhhh not this....apt-get install cowsay yum install cowsay
+#        cd /opt/ponysay
+#        python3 setup.py --freedom=partial install
+#    - name: Run ponysay
+#      shell: /usr/local/bin/ponysay "I am just the cutest pony!"
+#      shell: ponysay "I am just the cutest pony!"
+    - name: wall cmd
+      shell: |
+        echo "You now have cowsay mooooo!" |wall
+        echo 'run this on the command line --> cowsay "Have fun at Regionals!"' | wall
+#        echo 'cowsay "Have fun at Regionals!"' 
+

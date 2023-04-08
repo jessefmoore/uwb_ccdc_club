@@ -1,0 +1,25 @@
+---
+- name: Run ponysay on Ubuntu
+  hosts: ubuntu
+  become: true
+  tasks:
+#    - name: Clone the ponysay repository
+#      git:
+#        repo: https://github.com/erkin/ponysay.git
+#        dest: /opt/ponysay
+#        version: master
+    - name: Install ponysay
+      shell: |
+        sudo snap install ponysay
+#        cd /opt/ponysay
+#        python3 setup.py --freedom=partial install
+#    - name: Run ponysay
+#      shell: /usr/local/bin/ponysay "I am just the cutest pony!"
+#      shell: ponysay "I am just the cutest pony!"
+    - name: wall cmd
+      shell: |
+        echo "You now have ponysay I am just the cutest pony!" |wall
+        echo " to run the commands see this  https://github.com/erkin/ponysay " | wall
+        echo 'ponysay "I am just the cutest pony!"' | wall
+
+

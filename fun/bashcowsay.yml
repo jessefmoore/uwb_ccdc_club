@@ -1,0 +1,34 @@
+---
+- name: Install cowsay and add it to .bashrc
+  hosts: ubuntu
+  become: yes
+
+  tasks:
+    # Install cowsay
+    - name: Install cowsay package
+      apt:
+        name: cowsay
+        state: present
+
+    # Create .bashrc file if it doesn't exist
+    - name: Check if .bashrc exists
+      stat:
+        path: /home/{{ ansible_user }}/.bashrc
+      register: bashrc_file
+
+    - name: Create .bashrc file if it doesn't exist
+      file:
+        path: /home/{{ ansible_user }}/.bashrc
+        state: touch
+      when: not bashrc_file.stat.exists
+
+    # Add cowsay command and message to .bashrc
+    - name: Add cowsay command and message to .bashrc
+      lineinfile:
+        path: /home/{{ ansible_user }}/.bashrc
+        line: |
+          alias cowsay='cowsay -f $(ls /usr/share/cowsay/cows/ | shuf -n1)'
+          cowsay "Have Fun At Regionals"
+        insertbefore: EOF
+        state: present
+      become_user: "{{ ansible_user }}"

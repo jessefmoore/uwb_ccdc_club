@@ -1,0 +1,33 @@
+---
+# tasks file for nessus
+- name: Pull an image
+  community.docker.docker_image:
+    name: tenableofficial/nessus:latest
+    source: pull
+    # Select platform for pulling. If not specified, will pull whatever docker prefers.
+#    pull:
+#      platform: amd64
+
+- name: Linux - nessus systemd script
+  copy:
+    src: nessus.service
+    dest: /etc/systemd/system/nessus.service
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+
+- name: Linux - Enable nessus
+  systemd:
+    daemon_reload: yes
+  become: yes
+#  tags: restart_nessus
+
+- name: Linux - Start/Restart nessus
+  systemd:
+    name: nessus
+    state: stopped
+    state: restarted
+  become: yes
+#  tags: restart_nessus
+

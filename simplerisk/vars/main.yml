@@ -1,0 +1,7 @@
+---
+# vars file for simplerisk
+  vars:
+    container_count: 1
+    default_container_name: simplerisk
+    default_container_image: simplerisk/simplerisk:latest
+    default_container_command: start

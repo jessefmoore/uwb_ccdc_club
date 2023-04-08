@@ -1,0 +1,27 @@
+[Unit]
+Description=Velociraptor Container
+Wants=NetworkManager.service network-online.target docker.service
+After=NetworkManager.service network-online.target docker.service
+Requires=docker.service
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+TimeoutStartSec=0
+
+#ExecStartPre=/usr/bin/docker pull blueedge/win11react:latest
+#ExecStoppedPre=/usr/bin/docker stop blueedge/win11react:latest
+
+ExecStart=/usr/bin/docker run \
+        -d --privileged=true \
+        --name velociraptor \
+        -h velociraptor \
+        -p 8889:8889 \
+#        -p 8089:8089 \
+#        -v /opt/splunk/etc/apps/:/opt/splunk/etc/apps/ \
+#        --network="bridge" \
+        wlambert/velociraptor
+#ExecStop=/usr/bin/docker stop win11react
+#ExecStop=/usr/bin/docker rm win11react
+Restart=always

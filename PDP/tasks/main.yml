@@ -1,0 +1,32 @@
+---
+# tasks file for test
+- name: Pull an image
+  community.docker.docker_image:
+    name: jgoerzen/vintage-computing 
+#    name: blueedge/win11react:latest
+    source: pull
+    # Select platform for pulling. If not specified, will pull whatever docker prefers.
+#    pull:
+#      platform: amd64
+
+- name: Linux - pdp systemd script
+  copy:
+    src: pdp.service
+    dest: /etc/systemd/system/pdp.service
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+
+- name: Linux - Enable pdp
+  systemd:
+    daemon_reload: yes
+  become: yes
+#  tags: restart_winreact11
+- name: Linux - Start/Restart pdp
+  systemd:
+    name: pdp
+    #state: stopped
+    state: started
+  become: yes
+#  tags: restart_winreact11

@@ -1,0 +1,7 @@
+---
+# vars file for simplerisk
+  vars:
+    container_count: 1
+    default_container_name: nessus
+    default_container_image: tenableofficial/nessus:latest
+    default_container_command: start

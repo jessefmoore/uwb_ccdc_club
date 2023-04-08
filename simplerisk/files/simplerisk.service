@@ -1,0 +1,27 @@
+[Unit]
+Description=simplerisk Container
+Wants=NetworkManager.service network-online.target docker.service
+After=NetworkManager.service network-online.target docker.service
+Requires=docker.service
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+TimeoutStartSec=0
+
+#ExecStartPre=/usr/bin/docker pull blueedge/win11react:latest
+#ExecStoppedPre=/usr/bin/docker stop blueedge/win11react:latest
+
+ExecStart=/usr/bin/docker run \
+        -d --privileged=true \
+        --name simplerisk \
+        -h simplerisk \
+        -p 81:81 \
+        -p 443:443 \
+#        -v /opt/splunk/etc/apps/:/opt/splunk/etc/apps/ \
+#        --network="bridge" \
+        simplerisk/simplerisk
+#ExecStop=/usr/bin/docker stop simplerisk
+#ExecStop=/usr/bin/docker rm simplerisk
+Restart=always

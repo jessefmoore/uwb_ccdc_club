@@ -1,0 +1,86 @@
+---
+- hosts: debian
+  become: true
+#  vars:
+#    container_count: 1
+#    default_container_name: velociraptor
+#    default_container_image: wlambert/velociraptor
+#    default_container_command: start
+
+  tasks:
+    - name: Install aptitude
+      apt:
+        name: aptitude
+        state: latest
+        update_cache: true
+
+    - name: Install required system packages
+      apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-pip
+          - virtualenv
+          - python3-setuptools
+#          - docker-compose
+        state: latest
+        update_cache: true
+
+#    - name: Add Docker GPG apt Key
+#      apt_key:
+#        url: https://download.docker.com/linux/ubuntu/gpg
+#        state: present
+
+#    - name: Add Docker Repository
+#      apt_repository:
+#        repo: deb https://download.docker.com/linux/ubuntu focal stable
+#        state: present
+
+#    - name: Update apt and install docker-ce
+#      apt:
+#        name: docker-ce
+#        state: latest
+#        update_cache: true
+
+#    - name: Install Docker Module for Python
+#      pip:
+#        name: docker
+
+#    - name: git clone weslambert/velociraptor-docker
+#      ansible.builtin.git:
+#        repo: https://github.com/weslambert/velociraptor-docker.git
+#        dest: ~/velociraptor-docker
+#        single_branch: yes
+#        version: master
+
+#    - name: command to cd into veli dir and then docker-compose up
+#      ansible.builtin.command:
+#        argv:
+#          - cd ~/velociraptor-docker
+#          - docker-compose up -d
+#    - name: Go to the folder and execute command docker-compose up
+#      ansible.builtin.command:
+#        cmd: /root/velociraptor-docker/docker-compose up -d
+#
+#      command: chdir=~/velociraptor-docker docker-compose up -d 
+
+
+    - name: Run multiple commands to start docker-compose
+      shell: |
+        mkdir /etc/velociraptor/ \
+        cd /etc/velociraptor/ && wget https://github.com/Velocidex/velociraptor/releases/download/v0.6.7-5/velociraptor-v0.6.7-4-linux-amd64
+ \
+        cp velociraptor-v0.6.7-4-linux-amd64 /usr/local/bin/velociraptor \
+        chmod +x /usr/local/bin/velociraptor \
+        sed -i 's/127.0.0.1/192.168.0.70/g' server.config.yaml \
+        sleep 2 \
+        systemctl daemon-reload \
+        systemctl enable --now velociraptor \
+        velociraptor --config  /etc/velociraptor/server.config.yaml user add admin --role administrator \
+        echo 'admin'
+
+
+
+       

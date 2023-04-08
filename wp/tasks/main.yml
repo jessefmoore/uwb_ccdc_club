@@ -1,0 +1,31 @@
+---
+# tasks file for wordpress
+- name: Pull an image
+  community.docker.docker_image:
+    name: wordpress
+    source: pull
+    # Select platform for pulling. If not specified, will pull whatever docker prefers.
+#    pull:
+#      platform: amd64
+
+- name: Linux - wordpress systemd script
+  copy:
+    src: wordpress.service
+    dest: /etc/systemd/system/wordpress.service
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+
+- name: Linux - Enable wordpress
+  systemd:
+    daemon_reload: yes
+  become: yes
+#  tags: restart_wordpress
+
+- name: Linux - Start/Restart wordpress
+  systemd:
+    name: wordpress
+    state: stopped
+    state: restarted
+  become: yes

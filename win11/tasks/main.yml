@@ -1,0 +1,32 @@
+---
+# tasks file for test
+- name: Pull an image
+  community.docker.docker_image:
+    name: jessefmoore/win11ccdc
+#    name: blueedge/win11react:latest
+    source: pull
+    # Select platform for pulling. If not specified, will pull whatever docker prefers.
+#    pull:
+#      platform: amd64
+
+- name: Linux - win11react systemd script
+  copy:
+    src: win11react.service
+    dest: /etc/systemd/system/win11react.service
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+
+- name: Linux - Enable Win11React
+  systemd:
+    daemon_reload: yes
+  become: yes
+#  tags: restart_winreact11
+- name: Linux - Start/Restart Win11React
+  systemd:
+    name: win11react
+    #state: stopped
+    state: started
+  become: yes
+#  tags: restart_winreact11

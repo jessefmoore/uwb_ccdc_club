@@ -1,0 +1,110 @@
+---
+- hosts: ubuntu
+  become: true
+#    make sure Ansible controller runs pip3 install docker
+#    When the vetr URL is up https://localhost:8081
+#    Username is admin
+#    Password is 11_ThisIsTheFirstPassword_11
+#
+  tasks:
+#    - name: Install aptitude
+#      apt:
+#        name: aptitude
+#        state: latest
+#        update_cache: true
+
+    - name: Install required system packages
+      apt:
+        pkg:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - wget
+          - gnupg
+          - unzip
+          - software-properties-common
+          - python3-pip
+          - virtualenv
+          - python3-setuptools
+        state: latest
+        update_cache: true
+
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
+    - name: Install Docker-CE
+      apt:
+        name: docker-ce
+        state: latest
+        update_cache: true
+
+    - name: Install Docker Module for Python
+      pip:
+        name: docker
+    - name: Pip install Docker-Compose
+      ansible.builtin.pip:
+        name: docker-compose
+        state: latest
+
+    - name: Create /opt dir for VECTR
+      shell: mkdir -p /opt/vectr
+
+    - name: Download VECTR from Github
+      get_url:
+        url: "https://github.com/SecurityRiskAdvisors/VECTR/releases/download/ce-8.7.1/sra-vectr-runtime-8.7.1-ce.zip"
+        dest: "/opt/vectr/sra-vectr-runtime-8.7.1-ce.zip"
+
+#    - name: Download VECTR
+#      ansible.builtin.shell: wget https://github.com/SecurityRiskAdvisors/VECTR/releases/download/ce-8.7.1/sra-vectr-runtime-8.7.1-ce.zip
+#      become: yes
+#      args:
+#        chdir: /opt/vectr
+
+    - name: Shell Unzip File
+      ansible.builtin.shell: unzip -o /opt/vectr/sra-vectr-runtime-8.7.1-ce.zip -d /opt/vectr/
+
+#    - name: Change ownership of file
+#      file:
+#        path: /opt/vectr
+#        owner: serveradmin
+
+
+#    - name: Unzip VECTR file
+#      unarchive:
+#        src: "/opt/vectr/sra-vectr-runtime-8.7.1-ce.zip"
+#        dest: "/opt/vectr/"
+#        remote_src: yes
+#        extra_opts: [--strip-components=1, -o]
+#      become: yes
+
+    - name: Docker Compose up
+      community.docker.docker_compose:
+        project_src: "/opt/vectr/"
+        state: present
+
+#    - name: Unarchive VECTR
+#      ansible.builtin.unarchive:
+#        remote_src: /opt/vectr/sra-vectr-runtime-8.7.1-ce.zip
+#        remote_dest: /opt/vectr
+
+#    - name: Docker Compose up VECTR
+#      ansible.builtin.shell: docker compose up -d
+#      become: yes
+#      args:
+#        chdir: /opt/vectr
+#          -p 81:81 \
+#          -p 443:443 \
+#          simplerisk/simplerisk \
+#
+# run ansible adhoc cmd instead of above shell... 
+# ansible ubuntu -a "docker run --name simplerisk -d -p 81:81 -p 443:443 simplerisk/simplerisk"
+#
+# Open Browser to https://IPofServer:443
+# STOP and Remove all containers: sudo docker container stop $(docker container ls -aq)

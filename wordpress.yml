@@ -1,0 +1,17 @@
+- name: Copy docker-compose file
+  hosts: ubuntu
+  become: true
+  tasks:
+    - name: Copy docker-compose file
+      copy:
+        src: ~/all_about_ansible/files/docker-compose_wordpress.yaml
+        dest: "{{ansible_user_dir}}/docker-compose_wordpress.yaml"
+
+- name: Run docker-compose WordPress
+  hosts: ubuntu
+  become: true
+  tasks:
+    - name: Start docker-compose WordPress
+      command: docker-compose -f "{{ansible_user_dir}}/docker-compose_wordpress.yaml" up -d
+      args:
+        chdir: "{{ansible_user_dir}}"

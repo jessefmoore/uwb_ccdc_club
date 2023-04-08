@@ -1,0 +1,33 @@
+---
+# tasks file for simplerisk
+- name: Pull an image
+  community.docker.docker_image:
+    name: simplerisk/simplerisk:latest
+    source: pull
+    # Select platform for pulling. If not specified, will pull whatever docker prefers.
+#    pull:
+#      platform: amd64
+
+- name: Linux - simplerisk systemd script
+  copy:
+    src: simplerisk.service
+    dest: /etc/systemd/system/simplerisk.service
+    owner: root
+    group: root
+    mode: 0644
+  become: yes
+
+- name: Linux - Enable simplerisk
+  systemd:
+    daemon_reload: yes
+  become: yes
+#  tags: restart_winreact11
+
+- name: Linux - Start/Restart simplerisk
+  systemd:
+    name: simplerisk
+    state: stopped
+    state: restarted
+  become: yes
+#  tags: restart_simplerisk
+

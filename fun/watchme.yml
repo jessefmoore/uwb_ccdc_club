@@ -1,0 +1,26 @@
+---
+- hosts: windows
+  tasks:
+#    - name: Start YouTube URL
+#      win_shell: start "https://www.youtube.com/watch?v=7YvAYIJSSZY"
+#  Could use Putting on the Ritz https://www.youtube.com/watch?v=4OUnedMCCW0
+#   Rick Astley Never gonna Give you up Animated https://www.youtube.com/watch?v=LLFhKaqnWwk
+# 2022 Rick Astley Never Give you Up https://www.youtube.com/watch?v=tgTUtfb0Ok8
+
+#########################################################
+# The YouTube video is Rockwell - Somebody's Watching Me#
+#########################################################
+
+    - name: Create scheduled task
+      win_scheduled_task:
+        name: "My Scheduled Task"
+        description: "Runs my command daily at 6:00 PM"
+        actions:
+          - path: "cmd.exe"
+            arguments: "/c start https://www.youtube.com/watch?v=7YvAYIJSSZY"
+        triggers:
+          - type: "daily"
+            start_boundary: "2023-03-19T18:10:00"
+            enabled: true
+#            random_delay: "PT10M"
+

@@ -1,0 +1,60 @@
+# windows Hosts
+[windows]
+192.168.0.18
+192.168.0.81
+192.168.0.82
+
+[windows:vars]
+ansible_user=win10user
+ansible_password=P@$$word1
+ansible_connection=winrm
+ansible_winrm_server_cert_validation=ignore
+
+[debian]
+192.168.0.142
+#192.168.0.203
+#192.168.0.126
+#192.168.0.61
+
+[debian:vars]
+ansible_user=serveradmin
+#ansible_user=root
+ansible_sudo_pass="P@$$word1"
+ansible_become=true
+#ansible_become_method=enable
+#ansible_become_pass="P@$$word1"
+ansible_connection=ssh
+ansible_ssh_common_args="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+#ansible_python_interpreter: /usr/bin/python3
+ansible_ssh_private_key_file=~/.ssh/ansiblehost
+
+[ccdc]
+10.200.201.12
+
+[ccdc:vars]
+ansible_user=root
+ansible_sudo_pass="MacCheese4Me!"
+ansible_become=true
+ansible_connection=ssh
+ansible_ssh_common_args="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+
+
+[ubuntu]
+#192.168.0.70  # ubuntu 20.04
+192.168.0.44 #ubuntu decider
+#192.168.0.197 # ubuntu 22.04
+#152.70.112.208 # oracle cloud
+#192.168.0.108 # Ansible core 
+
+[ubuntu:vars]
+ansible_user=serveradmin
+#ansible_user=ubuntu
+#ansible_user=ubunuser
+ansible_sudo_pass="P@$$word1"
+ansible_become=true
+#ansible_become_method=enable
+ansible_connection=ssh
+ansible_ssh_common_args="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+#ansible_python_interpreter: /usr/bin/python3
+ansible_ssh_private_key_file=~/.ssh/ansiblehost
+#ansible_ssh_private_key_file=~/all_about_ansible/ssh-key-2023-01-25_Oracle.key
