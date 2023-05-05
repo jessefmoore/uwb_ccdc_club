@@ -26,7 +26,6 @@
 - name: Linux - Start/Restart nessus
   systemd:
     name: nessus
-    state: stopped
     state: restarted
   become: yes
 #  tags: restart_nessus
