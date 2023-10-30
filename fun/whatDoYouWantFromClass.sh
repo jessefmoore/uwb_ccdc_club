@@ -1,6 +1,7 @@
 #2023-10-27
 # dfir-jesseee
-#
+# This requires this script to complete the crontab activity: https://github.com/jessefmoore/uwb_ccdc_club/blob/main/fun/wall.sh
+
 #!/bin/bash
 
 # Ask the user for their input
