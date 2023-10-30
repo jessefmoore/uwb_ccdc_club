@@ -3,6 +3,7 @@
 # put this in crontab -e
 # At every 5 minutes, see https://crontab.guru/#*/5_*_*_*_*
 # */5 * * * *
+# this wall.sh needs output from this script: https://github.com/jessefmoore/uwb_ccdc_club/blob/main/fun/whatDoYouWantFromClass.sh
 
 #!/bin/bash
 
