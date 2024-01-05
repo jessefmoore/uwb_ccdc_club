@@ -1,0 +1,27 @@
+ #serveradmin@ansible:/usr/share/ansible$ sudo cat  nfs.server.yml
+---
+- hosts: nfs
+  become: yes
+  tasks:
+    - name: install nfs-kernel-server
+      apt: name=nfs-kernel-server state=latest
+
+    - name: Create a mountable directory if it does not exist
+      file:
+        path: /home/serveradmin/nfs_test
+        state: directory
+        owner: serveradmin
+        group: serveradmin
+        mode: '0775'
+    - name: install nfs-common
+      apt: name=nfs-common
+
+    - name: Copy exports file.
+      template:
+        src: ./exports.j2
+        dest: /etc/exports
+        owner: root
+        group: root
+        mode: 0644
+    - name: NFS apply change configrue
+      shell: systemctl restart nfs-kernel-server
