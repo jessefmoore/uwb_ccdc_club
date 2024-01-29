@@ -9,6 +9,8 @@ ansible_user=win10user
 ansible_password=P@$$word1
 ansible_connection=winrm
 ansible_winrm_server_cert_validation=ignore
+ansible_connection=ssh
+ansible_ssh_common_args=-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null
 
 [debian]
 192.168.0.142
