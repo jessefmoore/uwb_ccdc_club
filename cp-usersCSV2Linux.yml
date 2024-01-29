@@ -1,0 +1,11 @@
+---
+- name: Copy Files to Remote Linux Machine
+  hosts: quals
+  become: yes  # This assumes you have the necessary privileges to write to /opt
+
+  tasks:
+    - name: Copy files to /opt on remote machine
+      ansible.builtin.copy:
+        src: /home/serveradmin/uwb_ccdc_club/files/quals-userslist.csv
+        dest: /tmp/
+       # remote_src: yes  # Copies files from the control machine to the remote machine
