@@ -1,0 +1,6 @@
+---
+- name: Ensure Docker container for Samba is running
+  hosts: ubuntu
+  become: true
+  roles:
+    - docker_samba
