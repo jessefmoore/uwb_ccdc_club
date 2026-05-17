@@ -1,0 +1,13 @@
+# ansible-playbook -i hosts2.yml kali_update.yml -K
+---
+- name: Update APT Cache on Kali hosts
+  hosts: kali_hosts
+  become: true
+  gather_facts: false
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+        # This prevents the task from failing if the cache is already fresh
+        cache_valid_time: 0
