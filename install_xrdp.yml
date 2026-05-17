@@ -1,4 +1,5 @@
 # ansible-playbook -i hosts2.yml install_xrdp.yml -K -l kali_hosts
+# add the private key to ~/.ssh
 ---
 - name: Install and Enable XRDP on Kali targets
   hosts: kali_hosts
