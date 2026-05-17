@@ -1,0 +1,23 @@
+# ansible-playbook -i hosts2.yml install_xrdp.yml -K -l kali_hosts
+---
+- name: Install and Enable XRDP on Kali targets
+  hosts: kali_hosts
+  become: true  # This grants the necessary sudo permissions for apt and systemctl
+  gather_facts: true
+
+  tasks:
+    - name: Update apt cache
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install xrdp
+      ansible.builtin.apt:
+        name: xrdp
+        state: present
+
+    - name: Enable and start xrdp service
+      ansible.builtin.systemd:
+        name: xrdp
+        enabled: yes
+        state: started
