@@ -1,0 +1,15 @@
+-- Runs once, on first container init (empty data dir).
+CREATE DATABASE IF NOT EXISTS `{{ wp_db_name }}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE IF NOT EXISTS `{{ nc_db_name }}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE USER IF NOT EXISTS '{{ wp_db_user }}'@'%' IDENTIFIED BY '{{ wp_db_password }}';
+CREATE USER IF NOT EXISTS '{{ nc_db_user }}'@'%' IDENTIFIED BY '{{ nc_db_password }}';
+
+GRANT ALL PRIVILEGES ON `{{ wp_db_name }}`.* TO '{{ wp_db_user }}'@'%';
+GRANT ALL PRIVILEGES ON `{{ nc_db_name }}`.* TO '{{ nc_db_user }}'@'%';
+
+-- INTENTIONALLY VULNERABLE (training): root reachable from any host.
+CREATE USER IF NOT EXISTS 'root'@'%' IDENTIFIED BY '{{ mysql_root_password }}';
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' WITH GRANT OPTION;
+
+FLUSH PRIVILEGES;

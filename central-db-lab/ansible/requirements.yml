@@ -1,0 +1,6 @@
+---
+# Galaxy dependencies for the central-DB lab.
+# Install on the Ludus server with:
+#   ludus ansible role add geerlingguy.docker --user centraldb
+roles:
+  - name: geerlingguy.docker

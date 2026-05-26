@@ -1,0 +1,25 @@
+---
+# Old WordPress core (Dec 2018) — many known CVEs.
+wordpress_image: "wordpress:5.0-apache"
+# Must match WP 5.0's PHP era: the latest wp-cli image runs PHP 8, which fatals on
+# WordPress 5.0 core (removed curly-brace offset syntax). PHP 7.4 still supports it.
+wp_cli_image: "wordpress:cli-php7.4"
+wp_compose_dir: /opt/wordpress
+wp_volume_name: wordpress_data
+
+# Last octet of the central DB on this VLAN; full host is derived at runtime.
+central_db_last_octet: 10
+
+wp_site_title: "Central DB Lab"
+wp_admin_email: "admin@lab.local"
+
+# INTENTIONALLY VULNERABLE plugin: wp-file-manager 6.0 -> unauth RCE (CVE-2020-25213).
+wp_vuln_plugin: "wp-file-manager"
+wp_vuln_plugin_version: "6.0"
+
+# Overridden by global_role_vars in the range config.
+wp_db_name: wordpress
+wp_db_user: wp_user
+wp_db_password: "password"
+wp_admin_user: admin
+wp_admin_password: admin

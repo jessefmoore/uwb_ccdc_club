@@ -1,0 +1,110 @@
+/*
+Theme Name: GrayHats
+Theme URI: https://grayhats.club/
+Author: Central DB Lab
+Description: Superficial recreation of the GrayHats (UW Bothell cybersecurity club) landing page for a training range.
+Version: 1.0
+*/
+
+:root {
+  --bg: #020406;
+  --bg-panel: #0c1018;
+  --bg-panel-2: #182030;
+  --text: #d9f1f5;
+  --muted: #9ca3af;
+  --accent: #5cb8ff;
+  --link: #0a66c2;
+  --red: #f13c60;
+  --border: #1c2734;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Noto Sans Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: #90c5ff; }
+
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+/* Header */
+.site-header {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(2, 4, 6, 0.85);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+.site-header .wrap {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 64px;
+}
+.brand { display: flex; align-items: center; gap: 12px; }
+.brand img { height: 36px; width: auto; }
+.brand .name { font-weight: 700; letter-spacing: 1px; font-size: 1.1rem; }
+.brand .name b { color: var(--accent); }
+.nav { display: flex; gap: 22px; flex-wrap: wrap; }
+.nav a { color: var(--muted); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
+.nav a:hover { color: var(--text); }
+
+/* Hero */
+.hero {
+  text-align: center;
+  padding: 110px 0 90px;
+  background:
+    radial-gradient(900px 400px at 50% -10%, rgba(92,184,255,0.10), transparent 60%),
+    linear-gradient(180deg, #020406 0%, #060c14 100%);
+  border-bottom: 1px solid var(--border);
+}
+.hero .badge {
+  display: inline-block; font-size: 0.75rem; letter-spacing: 3px;
+  color: var(--accent); border: 1px solid var(--border);
+  padding: 6px 14px; border-radius: 999px; margin-bottom: 26px;
+  background: rgba(92,184,255,0.05);
+}
+.hero h1 { font-size: clamp(3rem, 9vw, 6rem); letter-spacing: 2px; line-height: 1; }
+.hero h1 .gray { color: #c9d4dd; }
+.hero h1 .hats { color: var(--accent); }
+.hero .tagline { color: var(--muted); margin-top: 18px; font-size: 1.05rem; }
+.hero .motto { margin-top: 8px; font-size: 1.25rem; color: var(--text); }
+.hero .motto .cursor { color: var(--red); animation: blink 1.1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+.cta { margin-top: 36px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+.btn {
+  padding: 12px 26px; border-radius: 8px; font-size: 0.9rem; letter-spacing: 1px;
+  text-transform: uppercase; border: 1px solid var(--accent);
+}
+.btn.primary { background: var(--accent); color: #02101f; font-weight: 700; }
+.btn.ghost { color: var(--accent); }
+.btn:hover { transform: translateY(-1px); }
+
+/* Sections */
+section { padding: 72px 0; border-bottom: 1px solid var(--border); }
+section h2 { font-size: 1.8rem; letter-spacing: 1px; margin-bottom: 8px; }
+section h2 .hash { color: var(--accent); }
+section .lead { color: var(--muted); max-width: 720px; margin-bottom: 36px; }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+.card {
+  background: var(--bg-panel); border: 1px solid var(--border);
+  border-radius: 12px; padding: 24px;
+}
+.card:hover { border-color: var(--accent); }
+.card .tag { color: var(--accent); font-size: 0.75rem; letter-spacing: 2px; text-transform: uppercase; }
+.card h3 { margin: 10px 0 6px; font-size: 1.2rem; }
+.card .time { color: var(--red); font-size: 0.85rem; margin-bottom: 10px; }
+.card p { color: var(--muted); font-size: 0.92rem; }
+
+.officers { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+.officer { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+.officer .role { color: var(--accent); font-size: 0.75rem; letter-spacing: 1px; text-transform: uppercase; }
+.officer .who { margin-top: 6px; font-size: 1rem; }
+
+/* Footer */
+.site-footer { padding: 40px 0; text-align: center; color: var(--muted); font-size: 0.85rem; }
+.site-footer .mono { color: var(--accent); }

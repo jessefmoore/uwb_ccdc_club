@@ -1,0 +1,12 @@
+---
+galaxy_info:
+  role_name: central_db_docker
+  author: ludus-lab
+  description: Central MariaDB container serving the WordPress and Nextcloud databases
+  license: MIT
+  min_ansible_version: "2.10"
+  platforms:
+    - name: Debian
+      versions:
+        - bookworm
+dependencies: []

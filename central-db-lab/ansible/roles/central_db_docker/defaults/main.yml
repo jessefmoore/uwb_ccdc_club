@@ -1,0 +1,12 @@
+---
+mariadb_image: "mariadb:10.6"
+db_compose_dir: /opt/central_db
+
+# Overridden by global_role_vars in the range config.
+mysql_root_password: "toor"
+wp_db_name: wordpress
+wp_db_user: wp_user
+wp_db_password: "password"
+nc_db_name: nextcloud
+nc_db_user: nc_user
+nc_db_password: "password"

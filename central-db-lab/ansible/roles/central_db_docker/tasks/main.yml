@@ -1,0 +1,36 @@
+---
+- name: Create compose directory
+  ansible.builtin.file:
+    path: "{{ db_compose_dir }}"
+    state: directory
+    mode: "0755"
+  become: true
+
+- name: Render MariaDB init SQL
+  ansible.builtin.template:
+    src: init.sql.j2
+    dest: "{{ db_compose_dir }}/init.sql"
+    mode: "0644"
+  become: true
+
+- name: Render docker-compose.yml
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ db_compose_dir }}/docker-compose.yml"
+    mode: "0644"
+  become: true
+  register: db_compose
+
+- name: Bring up the MariaDB container
+  ansible.builtin.command:
+    cmd: docker compose up -d
+    chdir: "{{ db_compose_dir }}"
+  become: true
+  register: db_up
+  changed_when: "'Started' in db_up.stderr or 'Created' in db_up.stderr or db_compose.changed"
+
+- name: Wait for MariaDB to accept connections
+  ansible.builtin.wait_for:
+    host: 127.0.0.1
+    port: 3306
+    timeout: 180

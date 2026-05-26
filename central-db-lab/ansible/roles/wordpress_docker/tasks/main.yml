@@ -1,0 +1,137 @@
+---
+- name: Derive the central DB host from this VM's VLAN IP
+  ansible.builtin.set_fact:
+    central_db_host: "{{ ansible_default_ipv4.address | regex_replace('\\.[0-9]+$', '.' ~ central_db_last_octet) }}"
+
+- name: Wait for the central DB to accept connections
+  ansible.builtin.wait_for:
+    host: "{{ central_db_host }}"
+    port: 3306
+    timeout: 240
+
+- name: Create compose directory
+  ansible.builtin.file:
+    path: "{{ wp_compose_dir }}"
+    state: directory
+    mode: "0755"
+  become: true
+
+- name: Render docker-compose.yml
+  ansible.builtin.template:
+    src: docker-compose.yml.j2
+    dest: "{{ wp_compose_dir }}/docker-compose.yml"
+    mode: "0644"
+  become: true
+  register: wp_compose
+
+- name: Bring up the WordPress container
+  ansible.builtin.command:
+    cmd: docker compose up -d
+    chdir: "{{ wp_compose_dir }}"
+  become: true
+  register: wp_up
+  changed_when: "'Started' in wp_up.stderr or 'Created' in wp_up.stderr or wp_compose.changed"
+
+# wp-cli one-shot containers share the WordPress volume and use host networking
+# so they can reach the central DB on the VLAN. Run as root (--allow-root).
+# NOTE: we deliberately do NOT use `wp db check` as a readiness probe — that shells
+# out to the mariadb-check binary, which forces TLS and fails against our non-TLS
+# MariaDB. wp core install uses PHP mysqli (no TLS requirement); retries below
+# absorb the DB-initialization race instead.
+- name: Install WordPress (headless; retries absorb DB init race)
+  ansible.builtin.command:
+    cmd: >
+      docker run --rm -u 0 --network host -v {{ wp_volume_name }}:/var/www/html
+      {{ wp_cli_image }} wp --allow-root core install
+      --url=http://{{ ansible_default_ipv4.address }}/
+      --title={{ wp_site_title | quote }}
+      --admin_user={{ wp_admin_user }}
+      --admin_password={{ wp_admin_password }}
+      --admin_email={{ wp_admin_email }}
+      --skip-email
+  become: true
+  register: wp_install
+  retries: 30
+  delay: 10
+  until: wp_install.rc == 0 or 'already installed' in ((wp_install.stdout | default('')) ~ (wp_install.stderr | default('')))
+  failed_when: wp_install.rc != 0 and 'already installed' not in ((wp_install.stdout | default('')) ~ (wp_install.stderr | default('')))
+  changed_when: wp_install.rc == 0
+
+# The vulnerable plugin is bundled in files/ (wordpress.org's archived 6.0 zip is
+# double-wrapped/malformed and wp-cli rejects it; older CLI images also can't verify
+# TLS to wordpress.org). Ship the verified plugin zip and install it from a local
+# file so the container needs no network.
+- name: Copy the bundled vulnerable plugin zip to the host
+  ansible.builtin.copy:
+    src: "{{ wp_vuln_plugin }}-{{ wp_vuln_plugin_version }}.zip"
+    dest: "{{ wp_compose_dir }}/{{ wp_vuln_plugin }}-{{ wp_vuln_plugin_version }}.zip"
+    mode: "0644"
+  become: true
+
+- name: Install and activate the vulnerable plugin from the local zip
+  ansible.builtin.command:
+    cmd: >
+      docker run --rm -u 0 --network host
+      -v {{ wp_volume_name }}:/var/www/html
+      -v {{ wp_compose_dir }}:/host
+      {{ wp_cli_image }} wp --allow-root plugin install
+      /host/{{ wp_vuln_plugin }}-{{ wp_vuln_plugin_version }}.zip --activate --force
+  become: true
+  register: wp_plugin
+  changed_when: "'Plugin installed successfully' in wp_plugin.stdout or 'Plugin updated' in wp_plugin.stdout or 'Activating' in wp_plugin.stdout"
+  failed_when: wp_plugin.rc != 0
+
+# wp-file-manager writes a backup dir under wp-content/uploads on load; the web user
+# (www-data, uid 33) must own/write it or the front page shows fopen() warnings.
+- name: Ensure WordPress uploads tree is writable by the web user
+  ansible.builtin.command:
+    cmd: >
+      docker run --rm -u 0 -v {{ wp_volume_name }}:/var/www/html
+      {{ wp_cli_image }} sh -c
+      "mkdir -p /var/www/html/wp-content/uploads/wp-file-manager-pro/fm_backup &&
+       chown -R 33:33 /var/www/html/wp-content/uploads &&
+       chmod -R 775 /var/www/html/wp-content/uploads"
+  become: true
+  changed_when: true
+
+# Superficially skin the site to look like the GrayHats club landing page.
+- name: Copy the GrayHats theme to the host
+  ansible.builtin.copy:
+    src: grayhats-theme
+    dest: "{{ wp_compose_dir }}/"
+    mode: "0755"
+  become: true
+
+- name: Install the GrayHats theme into the WordPress volume
+  ansible.builtin.command:
+    cmd: >
+      docker run --rm -u 0
+      -v {{ wp_volume_name }}:/var/www/html
+      -v {{ wp_compose_dir }}:/host
+      {{ wp_cli_image }} sh -c
+      "rm -rf /var/www/html/wp-content/themes/grayhats &&
+       cp -r /host/grayhats-theme /var/www/html/wp-content/themes/grayhats &&
+       chown -R 33:33 /var/www/html/wp-content/themes/grayhats"
+  become: true
+  changed_when: true
+
+- name: Activate the GrayHats theme
+  ansible.builtin.command:
+    cmd: >
+      docker run --rm -u 0 --network host -v {{ wp_volume_name }}:/var/www/html
+      {{ wp_cli_image }} wp --allow-root theme activate grayhats
+  become: true
+  register: wp_theme
+  changed_when: "'Success' in wp_theme.stdout"
+  failed_when: wp_theme.rc != 0
+
+- name: Set site title and tagline to match GrayHats
+  ansible.builtin.command:
+    cmd: >
+      docker run --rm -u 0 --network host -v {{ wp_volume_name }}:/var/www/html
+      {{ wp_cli_image }} wp --allow-root option update {{ item.key }} {{ item.value | quote }}
+  become: true
+  loop:
+    - { key: blogname, value: "GrayHats" }
+    - { key: blogdescription, value: "Cybersecurity @ University of Washington Bothell" }
+  changed_when: true

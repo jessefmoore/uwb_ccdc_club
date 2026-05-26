@@ -1,0 +1,18 @@
+services:
+  wordpress:
+    image: {{ wordpress_image }}
+    container_name: wordpress
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    environment:
+      WORDPRESS_DB_HOST: "{{ central_db_host }}:3306"
+      WORDPRESS_DB_USER: "{{ wp_db_user }}"
+      WORDPRESS_DB_PASSWORD: "{{ wp_db_password }}"
+      WORDPRESS_DB_NAME: "{{ wp_db_name }}"
+    volumes:
+      - {{ wp_volume_name }}:/var/www/html
+
+volumes:
+  {{ wp_volume_name }}:
+    name: {{ wp_volume_name }}

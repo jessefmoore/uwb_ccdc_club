@@ -1,0 +1,15 @@
+---
+# Older Nextcloud (24.x, EOL) — known CVEs for training.
+nextcloud_image: "nextcloud:24-apache"
+nc_compose_dir: /opt/nextcloud
+nc_volume_name: nextcloud_data
+
+# Last octet of the central DB on this VLAN; full host is derived at runtime.
+central_db_last_octet: 10
+
+# Overridden by global_role_vars in the range config.
+nc_db_name: nextcloud
+nc_db_user: nc_user
+nc_db_password: "password"
+nc_admin_user: admin
+nc_admin_password: admin

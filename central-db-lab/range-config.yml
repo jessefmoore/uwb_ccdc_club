@@ -1,0 +1,75 @@
+---
+# Central MariaDB training lab: one MariaDB server hosting the databases for
+# WordPress and Nextcloud. All three tiers run as Docker containers.
+#
+# Deploy into the centraldb user's range (JM is an admin key):
+#   ludus range config set -f range-config.yml --user centraldb
+#   ludus range deploy --user centraldb
+#
+# NOTE: confirm the exact Debian 12 template name first:
+#   ludus templates list --user centraldb
+
+ludus:
+  - vm_name: "{{ range_id }}-db"
+    hostname: db
+    template: debian-12-x64-server-template
+    vlan: 10
+    ip_last_octet: 10
+    linux: true
+    ram_gb: 4
+    cpus: 2
+    roles:
+      - geerlingguy.docker
+      - central_db_docker
+
+  - vm_name: "{{ range_id }}-wordpress"
+    hostname: wordpress
+    template: debian-12-x64-server-template
+    vlan: 10
+    ip_last_octet: 11
+    linux: true
+    ram_gb: 4
+    cpus: 2
+    roles:
+      - geerlingguy.docker
+      - name: wordpress_docker
+        depends_on:
+          - vm_name: "{{ range_id }}-db"
+            role: central_db_docker
+    role_vars:
+      central_db_last_octet: 10
+
+  - vm_name: "{{ range_id }}-nextcloud"
+    hostname: nextcloud
+    template: debian-12-x64-server-template
+    vlan: 10
+    ip_last_octet: 12
+    linux: true
+    ram_gb: 4
+    cpus: 2
+    roles:
+      - geerlingguy.docker
+      - name: nextcloud_docker
+        depends_on:
+          - vm_name: "{{ range_id }}-db"
+            role: central_db_docker
+    role_vars:
+      central_db_last_octet: 10
+
+# Applied to every VM/role. geerlingguy.docker reads docker_install_compose_plugin;
+# the custom roles read the credential vars below.
+global_role_vars:
+  docker_install_compose_plugin: true
+
+  # --- lab-only credentials, intentionally weak. Never reuse. ---
+  mysql_root_password: "toor"
+  wp_db_name: wordpress
+  wp_db_user: wp_user
+  wp_db_password: "password"
+  nc_db_name: nextcloud
+  nc_db_user: nc_user
+  nc_db_password: "password"
+  wp_admin_user: admin
+  wp_admin_password: admin
+  nc_admin_user: admin
+  nc_admin_password: admin

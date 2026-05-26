@@ -1,0 +1,21 @@
+services:
+  nextcloud:
+    image: {{ nextcloud_image }}
+    container_name: nextcloud
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    environment:
+      MYSQL_HOST: "{{ central_db_host }}"
+      MYSQL_DATABASE: "{{ nc_db_name }}"
+      MYSQL_USER: "{{ nc_db_user }}"
+      MYSQL_PASSWORD: "{{ nc_db_password }}"
+      NEXTCLOUD_ADMIN_USER: "{{ nc_admin_user }}"
+      NEXTCLOUD_ADMIN_PASSWORD: "{{ nc_admin_password }}"
+      NEXTCLOUD_TRUSTED_DOMAINS: "{{ ansible_default_ipv4.address }}"
+    volumes:
+      - {{ nc_volume_name }}:/var/www/html
+
+volumes:
+  {{ nc_volume_name }}:
+    name: {{ nc_volume_name }}
